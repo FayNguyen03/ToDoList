@@ -1,5 +1,6 @@
-using Microsft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TodoAPI.Interfaces;
+using TodoAPI.Contracts;
 
 namespace TodoAPI.Controllers{
     [ApiController]
@@ -12,28 +13,28 @@ namespace TodoAPI.Controllers{
             _todoServices = todoServices;
         }
 
-
         [HttpPost]
         public async Task<IActionResult> CreateTodoAsync(CreateTodoRequest request)
         {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+            //check if the request model is vaid
+            if (!ModelState.IsValid)
+            {
+                //if not return the model state errors
+                return BadRequest(ModelState);
+            }
 
+            try
+            {
 
-        try
-        {
+                await _todoServices.CreateTodoAsync(request);
+                return Ok(new { message = "Blog post successfully created" });
 
-            await _todoServices.CreateTodoAsync(request);
-            return Ok(new { message = "Blog post successfully created" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the  crating Todo Item", error = ex.Message });
 
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = "An error occurred while creating the  crating Todo Item", error = ex.Message });
-
-        }
+            }
         }
 
         [HttpGet]
@@ -41,10 +42,11 @@ namespace TodoAPI.Controllers{
         {
             try
             {
+                //retrieve the list of todo items
                 var todo = await _todoServices.GetAllAsync();
                 if (todo == null || !todo.Any())
                 {
-                    return Ok(new { message = "No Todo Items  found" });
+                    return Ok(new { message = "No Todo Items found" });
                 }
                 return Ok(new { message = "Successfully retrieved all blog posts", data = todo });
 
@@ -52,7 +54,6 @@ namespace TodoAPI.Controllers{
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while retrieving all Tood it posts", error = ex.Message });
-
 
             }
         }

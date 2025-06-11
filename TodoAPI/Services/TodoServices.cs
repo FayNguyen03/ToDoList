@@ -1,39 +1,46 @@
 using TodoAPI.Interfaces;
 using TodoAPI.Contracts;
 using TodoAPI.Models;
-
-namespace TodoAPI.Services{
+using TodoAPI.AppDataContext;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+ 
+namespace TodoAPI.Services {
     //ITodoService interface
-    public class TodoServices: ITodoServices{
+    public class TodoServices : ITodoServices {
         //interact with the database
         private readonly TodoDbContext _context;
         //facilitate logging throughout our application
         private readonly ILogger<TodoServices> _logger;
-        //
+        //object-to-object mapping using AutoMapper
         private readonly IMapper _mapper;
 
-        public TodoServices(TodoContext context,ILogger<TodoServices> logger, IMapper mapper){
+        public TodoServices(TodoDbContext context, ILogger<TodoServices> logger, IMapper mapper) {
             _context = context;
             _logger = logger;
             _mapper = mapper;
         }
-        public Task<IEnumerable<Todo>> GetAllAsync(){
+
+        //get all Todo items from the database
+        public async Task<IEnumerable<Todo>> GetAllAsync()
+        {
             //ToListAsync: fetch all Todo items from the database
             var todo = await _context.Todos.ToListAsync();
-            if(todo == null){
+            if (todo == null)
+            {
                 throw new Exception("No Todo items found");
             }
             return todo;
         }
 
         //fetch a specific Todo item by its Id
-        public async Task<Todo> GetByIdAsync(Guid id){
+        public async Task<Todo> GetByIdAsync(Guid id) {
             throw new NotImplementedException();
         }
 
         //Add a new Todo item to the database
-        public async Task CreateTodoAsync(CreateTodoRequest request){
-            try{
+        public async Task CreateTodoAsync(CreateTodoRequest request) {
+            try {
                 var todo = _mapper.Map<Todo>(request);
                 todo.CreatedAt = DateTime.UtcNow;
                 _context.Todos.Add(todo);
@@ -47,12 +54,12 @@ namespace TodoAPI.Services{
         }
 
         //Modify an existing Todo item in the database
-        public Task UpdateTodoAsync(Guid id, UpdateTodoRequest request){
+        public Task UpdateTodoAsync(Guid id, UpdateTodoRequest request) {
             throw new NotImplementedException();
         }
 
         //Remove a Todo item from the database
-        public Task DeleteTodoAsync(Guid id){
+        public Task DeleteTodoAsync(Guid id) {
             throw new NotImplementedException();
         }
 
