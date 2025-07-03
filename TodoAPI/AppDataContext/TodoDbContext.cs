@@ -6,6 +6,7 @@ using TodoAPI.Models;
 document: https://database.guide/how-to-install-sql-server-on-a-mac/
 run the linux container image with Docker
 docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=@1234MSSql" -p 1433:1433 --name todoSQL --hostname todoSQL1 -d mcr.microsoft.com/mssql/server:2025-latest
+mssql -u sa -p @1234MSSql
 */
 namespace TodoAPI.AppDataContext
 {
